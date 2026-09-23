@@ -1,0 +1,268 @@
+import java.util.Scanner;
+ 
+public class Main {
+ 
+    public static void main(String[] args) {
+ 
+        Scanner input = new Scanner(System.in);
+ 
+        int numberOfProducts;
+ 
+        // Validate number of products
+        do {
+            System.out.print("Enter number of products (1-8): ");
+            numberOfProducts = input.nextInt();
+ 
+            if (numberOfProducts < 1 || numberOfProducts > 8) {
+                System.out.println("Invalid number. Please enter 1-8.");
+            }
+ 
+        } while (numberOfProducts < 1 || numberOfProducts > 8);
+ 
+        input.nextLine();
+ 
+        Product[] products = new Product[numberOfProducts];
+ 
+        // Create products
+        for (int i = 0; i < numberOfProducts; i++) {
+ 
+            System.out.println("\nProduct " + (i + 1));
+ 
+            System.out.print("Product Code: ");
+            String code = input.nextLine();
+ 
+            System.out.print("Product Name: ");
+            String name = input.nextLine();
+ 
+            double price;
+ 
+            do {
+                System.out.print("Price: ");
+                price = input.nextDouble();
+ 
+                if (price < 0) {
+                    System.out.println("Invalid price. Price cannot be negative.");
+                }
+ 
+            } while (price < 0);
+ 
+            int stock;
+ 
+            do {
+                System.out.print("Stock: ");
+                stock = input.nextInt();
+ 
+                if (stock < 0) {
+                    System.out.println("Invalid stock. Stock cannot be negative.");
+                }
+ 
+            } while (stock < 0);
+ 
+            input.nextLine();
+ 
+            products[i] = new Product(code, name, price, stock);
+        }
+ 
+        // Number of transactions
+        int numberOfTransactions;
+ 
+        do {
+            System.out.print("\nEnter number of transactions: ");
+            numberOfTransactions = input.nextInt();
+ 
+            if (numberOfTransactions < 1) {
+                System.out.println("Invalid number.");
+            }
+ 
+        } while (numberOfTransactions < 1);
+ 
+        int transactionCount = 0;
+ 
+        // Process transactions
+        for (int i = 0; i < numberOfTransactions; i++) {
+ 
+            System.out.println("\nTransaction " + (i + 1));
+ 
+            input.nextLine();
+ 
+            System.out.print("Product Code: ");
+            String code = input.nextLine();
+ 
+            // Search product
+            Product product = null;
+ 
+            for (int j = 0; j < products.length; j++) {
+ 
+                if (products[j].getCode().equals(code)) {
+                    product = products[j];
+                    break;
+                }
+            }
+ 
+            if (product == null) {
+                System.out.println("Product not found.");
+                continue;
+            }
+ 
+            System.out.print(
+                "Transaction Type (R = Restock, S = Sell): "
+            );
+ 
+            String type = input.nextLine();
+ 
+            System.out.print("Quantity: ");
+            int quantity = input.nextInt();
+ 
+            boolean successful = false;
+ 
+            if (type.equalsIgnoreCase("R")) {
+ 
+                successful = product.restock(quantity);
+ 
+            } else if (type.equalsIgnoreCase("S")) {
+ 
+                successful = product.sell(quantity);
+ 
+            } else {
+ 
+                System.out.println("Invalid transaction type.");
+                continue;
+            }
+ 
+            transactionCount++;
+ 
+            if (successful) {
+                System.out.println("Transaction successful.");
+            } else {
+                System.out.println("Transaction rejected.");
+            }
+        }
+ 
+        // Display final inventory
+        System.out.println("\n========== FINAL INVENTORY ==========");
+ 
+        double totalInventoryValue = 0;
+ 
+        for (int i = 0; i < products.length; i++) {
+ 
+            double inventoryValue =
+                    products[i].getPrice() * products[i].getStock();
+ 
+            totalInventoryValue += inventoryValue;
+ 
+            System.out.printf(
+                "%s | %s | Price: %.2f | Stock: %d | "
+                + "Inventory Value: %.2f",
+                products[i].getCode(),
+                products[i].getName(),
+                products[i].getPrice(),
+                products[i].getStock(),
+                inventoryValue
+            );
+ 
+            if (products[i].getStock() <= 5) {
+                System.out.print(" | LOW STOCK");
+            }
+ 
+            System.out.println();
+        }
+ 
+        System.out.println("\nTotal Transactions Processed: "
+                + transactionCount);
+ 
+        System.out.printf(
+            "Total Inventory Value: %.2f%n",
+            totalInventoryValue
+        );
+ 
+        System.out.println("Total Product Objects Created: "
+                + Product.getProductCount());
+ 
+        input.close();
+    }
+}
+ 
+ 
+// ================= PRODUCT CLASS =================
+ 
+class Product {
+ 
+    private String code;
+    private String name;
+    private double price;
+    private int stock;
+ 
+    private static int productCount = 0;
+ 
+    // Constructor
+    public Product(
+            String code,
+            String name,
+            double price,
+            int stock) {
+ 
+        this.code = code;
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+ 
+        productCount++;
+    }
+ 
+    // Getters
+    public String getCode() {
+        return code;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    public double getPrice() {
+        return price;
+    }
+ 
+    public int getStock() {
+        return stock;
+    }
+ 
+    // Setters
+    public void setCode(String code) {
+        this.code = code;
+    }
+ 
+    public void setName(String name) {
+        this.name = name;
+    }
+ 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+ 
+    // Restock
+    public boolean restock(int quantity) {
+ 
+        if (quantity <= 0) {
+            return false;
+        }
+ 
+        stock += quantity;
+        return true;
+    }
+ 
+    // Sell
+    public boolean sell(int quantity) {
+ 
+        if (quantity <= 0 || quantity > stock) {
+            return false;
+        }
+ 
+        stock -= quantity;
+        return true;
+    }
+ 
+    // Static product counter
+    public static int getProductCount() {
+        return productCount;
+    }
+}
