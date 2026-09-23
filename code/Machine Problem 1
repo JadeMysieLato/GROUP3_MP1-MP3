@@ -1,0 +1,150 @@
+import java.util.Scanner;
+ 
+public class Main {
+ 
+    public static void main(String[] args) {
+ 
+        Scanner input = new Scanner(System.in);
+ 
+        int numberOfStudents;
+ 
+        do {
+            System.out.print("Enter number of students (1-10): ");
+            numberOfStudents = input.nextInt();
+ 
+            if (numberOfStudents < 1 || numberOfStudents > 10) {
+                System.out.println("Invalid number. Please enter 1-10.");
+            }
+ 
+        } while (numberOfStudents < 1 || numberOfStudents > 10);
+ 
+        input.nextLine();
+ 
+        Student[] students = new Student[numberOfStudents];
+ 
+        for (int i = 0; i < numberOfStudents; i++) {
+ 
+            System.out.println("\nStudent " + (i + 1));
+ 
+            System.out.print("Student ID: ");
+            String id = input.nextLine();
+ 
+            System.out.print("Full Name: ");
+            String name = input.nextLine();
+ 
+            int[] scores = new int[3];
+ 
+            for (int j = 0; j < 3; j++) {
+ 
+                do {
+                    System.out.print("Score " + (j + 1) + " (0-100): ");
+                    scores[j] = input.nextInt();
+ 
+                    if (scores[j] < 0 || scores[j] > 100) {
+                        System.out.println("Invalid score. Enter 0-100.");
+                    }
+ 
+                } while (scores[j] < 0 || scores[j] > 100);
+            }
+ 
+            input.nextLine();
+ 
+            students[i] = new Student(id, name, scores);
+        }
+ 
+        System.out.println("\n========== STUDENT SUMMARY ==========");
+ 
+        Student highest = students[0];
+ 
+        for (int i = 0; i < students.length; i++) {
+ 
+            System.out.printf(
+                "%s | %s | Average: %.2f | %s%n",
+                students[i].getStudentId(),
+                students[i].getName(),
+                students[i].getAverage(),
+                students[i].getStatus()
+            );
+ 
+            if (students[i].getAverage() > highest.getAverage()) {
+                highest = students[i];
+            }
+        }
+ 
+        System.out.println("\n========== HIGHEST AVERAGE ==========");
+        System.out.println("Student: " + highest.getName());
+        System.out.printf("Average: %.2f%n", highest.getAverage());
+ 
+        System.out.println("\nTotal Student Objects Created: "
+                + Student.getStudentCount());
+ 
+        input.close();
+    }
+}
+ 
+ 
+// ================= STUDENT CLASS =================
+ 
+class Student {
+ 
+    private String studentId;
+    private String name;
+    private int[] scores;
+ 
+    private static int studentCount = 0;
+ 
+    public Student(String studentId, String name, int[] scores) {
+        this.studentId = studentId;
+        this.name = name;
+        this.scores = scores;
+        studentCount++;
+    }
+ 
+    public String getStudentId() {
+        return studentId;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    public int[] getScores() {
+        return scores;
+    }
+ 
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+ 
+    public void setName(String name) {
+        this.name = name;
+    }
+ 
+    public void setScores(int[] scores) {
+        this.scores = scores;
+    }
+ 
+    public double getAverage() {
+ 
+        int total = 0;
+ 
+        for (int score : scores) {
+            total += score;
+        }
+ 
+        return (double) total / scores.length;
+    }
+ 
+    public String getStatus() {
+ 
+        if (getAverage() >= 75) {
+            return "PASSED";
+        } else {
+            return "FAILED";
+        }
+    }
+ 
+    public static int getStudentCount() {
+        return studentCount;
+    }
+}
